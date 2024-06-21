@@ -22,6 +22,16 @@ export type LexTree = {
     name?: tokenName
     value: tokenValue
 }[]
+export type hookList = {[key: string]: Function[]}
+export type hooksLists = {
+    mounted: hookList,
+    unMounted: hookList
+}
+export type IComponentInstance = CustomComponent<any, any> & {
+    uid: string,
+    onMounted: Function[]
+    unUnMounted: Function[]
+}
 export type HTMLTemplateDate = any
 export type VNodeText = string
 export type VNodeTypes = 'element' | 'component' | 'root' | 'text' | 'interpolation'

@@ -1,35 +1,36 @@
-import {CustomComponent, CustomComponents} from "../../env/type";
-import {createDOMNode, createVComponent} from "./vdom";
-import {lex, parse} from "./ast";
-import {onMountedList} from "./hooks/onMounted";
-import {onUnMountedList} from "./hooks/OnUnMounted";
+import { IComponentInstance, CustomComponent, CustomComponents, VNode } from '../../env/type';
+import { AST } from './ast';
+import { VDOM } from './vdom';
 
-export function createApp(rootComponent: CustomComponent<any, any>, components: CustomComponents) {
-    components[rootComponent.name] = rootComponent
-    const virtualRoot = createVComponent(rootComponent.name, components, rootComponent.setup(), parse(lex(rootComponent.template), components).children)
-    const dom = createDOMNode(virtualRoot)
+export const ComponentInstance:{value:IComponentInstance} = {value: null}
 
-    return {
-        mount: (selector: string)=>{
-            const root = document.querySelector(selector)
-            root.innerHTML = ''
-            root.appendChild(dom)
+export class Framework {
+    private virtualRoot: VNode;
+    private dom: HTMLElement
+    private rootComponent: CustomComponent<any, any>
+    AST = new AST(this)
+    VDOM= new VDOM(this)
+    components: CustomComponents;
 
-            for (const key in onMountedList) {
-                onMountedList[key].forEach((callback)=> callback())
-            }
-        },
-        unMount(){
-            (dom as HTMLElement).remove();
-            for (const key in onUnMountedList) {
-                onUnMountedList[key].forEach((callback)=> callback())
-            }
-        },
-        getDOM(){
-            return dom
-        },
-        getTree(){
-            return virtualRoot
-        }
+    constructor(rootComponent: CustomComponent<any, any>, components: CustomComponents) {
+        this.rootComponent = rootComponent
+        this.components = components
+        this.init()
+    }
+
+    private init(){
+        this.components[this.rootComponent.name] = this.rootComponent
+        this.virtualRoot = this.VDOM.createVComponent(this.rootComponent.name, this.rootComponent.setup(), this.AST.parse(this.AST.lex(this.rootComponent.template)).children, this.rootComponent.style)
+        this.dom = this.VDOM.createDOMNode(this.virtualRoot) as HTMLElement
+    }
+
+    mount(selector: string){
+        const root = document.querySelector(selector)
+        root.innerHTML = ''
+        root.appendChild(this.dom)
+    }
+
+    unMount(){
+        this.dom.remove()
     }
 }

@@ -1,6 +1,6 @@
 import {ref} from "./modules/reactivity";
 import {CustomComponent, Ref} from "../env/type";
-import {createApp} from "./modules/framework";
+import { Framework } from './modules/framework';
 
 const appComponent: CustomComponent<null, {
     name: Ref<string>
@@ -69,7 +69,6 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
 const components = {
     HelloWorld: helloWorldComponent,
 }
-const app = createApp(appComponent, components)
+const app = new Framework(appComponent, components)
 app.mount('#app')
-setTimeout(()=> app.unMount(), 3000)
-console.log(app.getTree())
+setTimeout(()=> app.unMount(), 10000)
