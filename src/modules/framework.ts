@@ -1,15 +1,17 @@
-import { IComponentInstance, CustomComponent, CustomComponents, VNode } from '../../env/type';
-import { AST } from './ast';
-import { VDOM } from './vdom';
+import { CustomComponent, CustomComponents, LifeCycle, VComponentNode } from '../../env/type';
+import { ASTHelper } from './ASTHelper';
+import { VDOMHelper } from './VDOMHelper';
+import { callLifeCycle } from './hooks/LifeCycles';
+import { ComponentHelper } from './componentHelper';
 
-export const ComponentInstance:{value:IComponentInstance} = {value: null}
 
 export class Framework {
-    private virtualRoot: VNode;
+    private virtualRoot: VComponentNode;
     private dom: HTMLElement
     private rootComponent: CustomComponent<any, any>
-    AST = new AST(this)
-    VDOM= new VDOM(this)
+    componentHelper= new ComponentHelper(this);
+    ASTHelper = new ASTHelper(this)
+    VDOMHelper = new VDOMHelper(this)
     components: CustomComponents;
 
     constructor(rootComponent: CustomComponent<any, any>, components: CustomComponents) {
@@ -20,17 +22,19 @@ export class Framework {
 
     private init(){
         this.components[this.rootComponent.name] = this.rootComponent
-        this.virtualRoot = this.VDOM.createVComponent(this.rootComponent.name, this.rootComponent.setup(), this.AST.parse(this.AST.lex(this.rootComponent.template)).children, this.rootComponent.style)
-        this.dom = this.VDOM.createDOMNode(this.virtualRoot) as HTMLElement
+        this.virtualRoot = this.componentHelper.createComponentInstance(this.rootComponent)
+        this.dom = this.VDOMHelper.createDOMNode(this.virtualRoot) as HTMLElement
     }
 
     mount(selector: string){
         const root = document.querySelector(selector)
         root.innerHTML = ''
         root.appendChild(this.dom)
+        callLifeCycle(this.virtualRoot, LifeCycle.MOUNTED)
     }
 
     unMount(){
         this.dom.remove()
+        callLifeCycle(this.virtualRoot, LifeCycle.UNMOUNTED)
     }
 }

@@ -20,7 +20,9 @@ import { vModel } from './directives/vModel';
 import { applyScopedStyles } from '../../env/helper/scopedStyle';
 import { Framework } from './framework';
 
-export class VDOM {
+const { v4: uuidv4 } = require('uuid');
+
+export class VDOMHelper {
     constructor(
       private controller: Framework
     ) {}
@@ -35,18 +37,25 @@ export class VDOM {
             children: children || [],
         };
     }
-    createVComponent(tagName: VNodeTagName, props?: VNodeProps, children?: VNode[], style?: string, handlers?: VNodeHandlers, directives?: directives,):VComponentNode{
+
+    createVComponent(tagName: VNodeTagName, props?: VNodeProps, children?: VNode[], style?: string, handlers?: VNodeHandlers, directives?: directives):VComponentNode{
         const component = {
+            uid: uuidv4(),
             type: "component",
             tagName,
+            binds: {},
             props: props || {},
             directives: directives || {},
+            lifeCycles: {
+                mounted: [],
+                unMounted: []
+            },
             children: children || [],
             style: style || null,
             handlers: handlers || {},
         } as VComponentNode
-        const indexingProps = this.controller.AST.processPropsComponent(component)
-        const indexingComponent = this.controller.AST.indexingParentComponents(indexingProps) as VComponentNode
+        const indexingProps = this.controller.ASTHelper.processPropsComponent(component)
+        const indexingComponent = this.controller.ASTHelper.indexingParentComponents(indexingProps) as VComponentNode
         return indexingComponent
     }
     createVTextNode (text: VNodeText){

@@ -1,28 +1,41 @@
-import {ref} from "./modules/reactivity";
-import {CustomComponent, Ref} from "../env/type";
+import { ref } from './modules/reactivity';
+import { CustomComponent, Ref, VComponentNode } from '../env/type';
 import { Framework } from './modules/framework';
+
+export const currentComponentInstance: {value: VComponentNode} = {value: null}
 
 const appComponent: CustomComponent<null, {
     name: Ref<string>
-    name2: Ref<string>
 }> = {
     name: 'app',
     template: `
         <HelloWorld :name="name"></HelloWorld>
-        <button @click="()=> name.value = 'petya'">тест</button>
+        <input v-model="inputData" placeholder="Сохранить имя"></input>
+        <button @click="saveData">Сохранить</button>
 `   ,
     setup() {
+        const inputData = ref('');
         const name = ref("denis")
-        const name2 = ref('haha')
+        function saveData(){
+            if(!inputData.value) return
+            name.value = inputData.value;
+            inputData.value = ''
+        }
 
         return {
+            inputData,
             name,
-            name2
+            saveData
         }
     },
     style: `
         button {
-            background: blue;
+            cursor: pointer;
+            margin: 5px;  
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgb(232 91 91);
         }
     `
 }
@@ -33,7 +46,7 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
 }> = {
     name: 'HelloWorld',
     template: `
-        <div>
+        <div style="background: #e9ffd9">
             <div>{{name}}</div>
             <div v-if="value !== 5" :class="{
                denis: value === 2,
@@ -57,12 +70,7 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
     },
     style: `
         button {
-            cursor: pointer;
-            margin: 5px;
             background: rgb(213 213 213);;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
         }   
     `
 }
@@ -71,4 +79,3 @@ const components = {
 }
 const app = new Framework(appComponent, components)
 app.mount('#app')
-setTimeout(()=> app.unMount(), 10000)
