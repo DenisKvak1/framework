@@ -16,16 +16,26 @@ export type ReactiveHandler<T extends object> = {
 export type tokenType = 'tag-end' | 'tag-start' | 'bind' | 'handler' | 'prop' | 'interpolation' | 'text'
 export type tokenName = string
 export type tokenValue = string
-
+export enum LifeCycle {
+    MOUNTED = "mounted",
+    UNMOUNTED = "unMounted"
+}
 export type LexTree = {
     type: tokenType,
     name?: tokenName
     value: tokenValue
 }[]
+export type hookList = Function[]
+export type lifeCycles = {
+    [key in LifeCycle]: hookList
+};
+
 export type HTMLTemplateDate = any
 export type VNodeText = string
 export type VNodeTypes = 'element' | 'component' | 'root' | 'text' | 'interpolation'
 export type VNodeTagName = string
+export type componentID = string
+
 export type VNodeProps = {
     [key:string]: Ref<any> | string
 }
@@ -58,15 +68,18 @@ export type VElementNode = {
     children: VNode[],
 }
 export type VComponentNode = {
+    uid: componentID
     type: "component",
     tagName: VNodeTagName,
     props:  VNodeComponentProps,
     handlers: VNodeHandlers,
     directives: directives,
     style: string,
+    lifeCycles: lifeCycles
     children: VNode[],
 }
 export type VNode = {
+    uid?: componentID
     type: VNodeTypes,
     tagName?: VNodeTagName,
     props?: any,
@@ -75,6 +88,7 @@ export type VNode = {
     content?: any
     directives?: directives,
     style?: string,
+    lifeCycles?: lifeCycles
     parentComponent?: VComponentNode
     children?: VNode[]
 }

@@ -12,7 +12,7 @@ module.exports = {
         path: path.resolve(path.join(__dirname, `./builds/${PROJECT_NAME}`))
     },
     devServer: {
-        static: path.resolve(__dirname, `./`),
+        static: path.resolve(__dirname, `./src`),
         port: 8080
     },
     resolve: {
