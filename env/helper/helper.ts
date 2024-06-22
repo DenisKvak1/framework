@@ -1,4 +1,4 @@
-import {effect} from "../../src/modules/reactivity";
+import { effect, isRefObject } from '../../src/modules/reactivity';
 import {Ref} from "../type";
 
 export function bindClassEffect(node: HTMLElement, className: string, bind: { value: boolean }) {
@@ -38,10 +38,16 @@ export function parseStringToObject(str: string): { [key: string]: string } {
     return result;
 }
 export function parseExpression(expression: string, refs: Record<string, Ref<any>>): string {
-    const regex = /([a-zA-Z_$][0-9a-zA-Z_$]*)/g;
+    const regex = /([a-zA-Z_$][0-9a-zA-Z_$]*(?:\.[a-zA-Z_$][0-9a-zA-Z_$]*)?)/g;
     return expression.replace(regex, (match, varName) => {
-        if (refs[varName]) {
-            return `${varName}.value`;
+        const ref = refs[varName];
+
+        if(refs[varName]){
+            if (isRefObject(ref)) {
+                return `${varName}.value`;
+            } else {
+                return varName;
+            }
         }
         return match;
     });

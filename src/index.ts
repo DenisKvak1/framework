@@ -1,4 +1,4 @@
-import { ref } from './modules/reactivity';
+import { reactive, ref } from './modules/reactivity';
 import { CustomComponent, Ref, VComponentNode } from '../env/type';
 import { Framework } from './modules/framework';
 
@@ -16,6 +16,7 @@ const appComponent: CustomComponent<null, {
     setup() {
         const inputData = ref('');
         const name = ref("denis")
+        setTimeout(()=> name.value = "p", 3000)
         function saveData(){
             if(!inputData.value) return
             name.value = inputData.value;
@@ -47,7 +48,7 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
     name: 'HelloWorld',
     template: `
         <div style="background: #e9ffd9">
-            <div>{{name}}</div>
+            {{!store.name}}
             <div v-if="value !== 5" :class="{
                denis: value === 2,
                hanasy: value === 1
@@ -63,6 +64,7 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
         const value = ref(1);
 
         return {
+            store,
             name,
             value,
             is
@@ -74,6 +76,8 @@ const helloWorldComponent: CustomComponent<{name: Ref<string>}, {
         }   
     `
 }
+export const store = reactive({name: false})
+setTimeout(()=> store.name = true, 3000)
 const components = {
     HelloWorld: helloWorldComponent,
 }

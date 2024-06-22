@@ -1,4 +1,4 @@
-import {Effect, ReactiveHandler, Ref, TargetMap} from "../../env/type";
+import { Effect, ReactiveHandler, Ref, TargetMap } from '../../env/type';
 
 const targetMap: TargetMap = new WeakMap();
 let activeEffect: Effect | null = null;
@@ -76,10 +76,11 @@ export function ref<T>(raw: T): Ref<T> {
             track(ref, 'value');
             return raw.toString();
         },
-        valueOf(){
+        valueOf() {
             track(ref, 'value');
-            return raw
-        }
+            return raw;
+        },
+        __isRef: true,
     };
     return ref;
 }
@@ -90,4 +91,7 @@ export function computed<T>(getter: () => T): Ref<T> {
         result.value = getter();
     });
     return result;
+}
+export function isRefObject(obj: any): obj is { __isReactive: boolean } {
+    return obj && typeof obj === 'object' && '__isRef' in obj && obj.__isRef === true;
 }

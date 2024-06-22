@@ -7,6 +7,7 @@ export type Ref<T> = {
     value: T;
     toString: () => string;
     valueOf: ()=> T;
+    __isRef: boolean;
 }
 export type ReactiveHandler<T extends object> = {
     get(target: T, key: PropertyKey, receiver: any): any;
