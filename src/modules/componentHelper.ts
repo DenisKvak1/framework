@@ -20,6 +20,7 @@ export class ComponentHelper {
                 mounted: [],
                 unMounted: []
             },
+            parentComponent: null,
             children: children || [],
             style: component.style,
             handlers: {},

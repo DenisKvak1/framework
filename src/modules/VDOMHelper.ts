@@ -33,6 +33,7 @@ export class VDOMHelper {
             props: props || {},
             binds: binds || {},
             directives: directives || {},
+            parentComponent: null,
             handlers: handlers || {},
             children: children || [],
         };
@@ -52,6 +53,7 @@ export class VDOMHelper {
             },
             children: children || [],
             style: style || null,
+            parentComponent: null,
             handlers: handlers || {},
         } as VComponentNode
         const indexingProps = this.controller.ASTHelper.processPropsComponent(component)
@@ -196,7 +198,9 @@ export class VDOMHelper {
         }
 
         Object.entries(vNode.handlers).forEach(([key, value]: [string, string]) => {
-            handlersFunc[key](node, this.processHandlerData(value, vNode.parentComponent.props))
+            if(handlersFunc[key]){
+                handlersFunc[key](node, this.processHandlerData(value, vNode.parentComponent.props))
+            }
         });
     }
     processBinds(vNode:VNode, node:HTMLElement){

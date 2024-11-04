@@ -139,7 +139,7 @@ export class ASTHelper {
         return root;
     }
     indexingParentComponents(node: VNode, parentComponent?: VNode, grandParentComponent?: VNode) {
-        const newNode = { ...node };
+        const newNode = node
 
         if (newNode.type === 'component') {
             grandParentComponent = parentComponent; // Обновляем "дедовский" компонент
@@ -153,10 +153,13 @@ export class ASTHelper {
 
         if (newNode.type === 'element' || newNode.type === 'component' ) {
             const pComponent = parentComponent.tagName === newNode.tagName ? grandParentComponent as VComponentNode : parentComponent as VComponentNode // TODO
-            newNode.parentComponent = pComponent;
+            if(pComponent){
+                newNode.parentComponent = pComponent;
+            }
         }
 
         if (newNode.children) {
+
             // Рекурсивно обрабатываем детей, передавая текущий родительский и "дедовский" компоненты
             newNode.children = newNode.children.map(child => this.indexingParentComponents(child, parentComponent, grandParentComponent));
         }
@@ -164,7 +167,7 @@ export class ASTHelper {
         return newNode;
     }
     processPropsComponent(node:VNode, isFirstRoot = true, parentComponent?: VNode, grandParentComponent?: VNode):VNode {
-        const newNode = { ...node }; // Создаем новый узел, копируя текущий
+        const newNode = node
 
         // Обновляем grandParentComponent перед обновлением parentComponent
         if (newNode.type === 'component') {

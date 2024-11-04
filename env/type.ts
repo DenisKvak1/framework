@@ -66,6 +66,7 @@ export type VElementNode = {
     props: VNodeProps,
     handlers: VNodeHandlers,
     directives: directives,
+    parentComponent: VComponentNode
     children: VNode[],
 }
 export type VComponentNode = {
@@ -77,6 +78,7 @@ export type VComponentNode = {
     directives: directives,
     style: string,
     lifeCycles: lifeCycles
+    parentComponent: VComponentNode
     children: VNode[],
 }
 export type VNode = {
